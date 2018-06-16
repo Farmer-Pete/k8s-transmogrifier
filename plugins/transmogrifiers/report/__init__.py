@@ -24,7 +24,7 @@ class ReportTransmogrifier(transmogrifiers.AbstractTransmogrifier):
 
     @classproperty
     def description(cls):
-        return 'Generates reports, various layouts available'
+        return 'Generates reports'
 
     @classproperty
     def arggroup(cls):

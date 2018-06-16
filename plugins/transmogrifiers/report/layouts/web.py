@@ -1,6 +1,6 @@
 import os
 
-from ... import layouts
+from plugins.transmogrifiers.report import layouts
 
 from lib.decorators import classproperty
 

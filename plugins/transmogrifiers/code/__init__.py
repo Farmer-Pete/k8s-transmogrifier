@@ -26,7 +26,7 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
 
     @classproperty
     def description(cls):
-        return 'Generates code to load configurations, supports several languages'
+        return 'Generates code to load configurations'
 
     @classproperty
     def arggroup(cls):

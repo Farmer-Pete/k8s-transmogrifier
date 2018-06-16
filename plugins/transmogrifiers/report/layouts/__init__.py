@@ -43,7 +43,7 @@ def __onload():
     lib.cmdline.add(
         report.ReportTransmogrifier.arggroup,
         '--report-layout',
-        help='the layout to use for report generation',
+        help='layout to use for report generation',
         choices=[
             subclass.name
             for subclass in AbstractLayout.__subclasses__()

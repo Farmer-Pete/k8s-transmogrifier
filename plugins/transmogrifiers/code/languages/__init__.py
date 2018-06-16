@@ -116,7 +116,7 @@ def __onload():
     lib.cmdline.add(
         code.CodeTransmogrifier.arggroup,
         '--code-language',
-        help='the target language for code generation',
+        help='target language for code generation',
         choices=[
             subclass.name
             for subclass in AbstractLanguage.__subclasses__()

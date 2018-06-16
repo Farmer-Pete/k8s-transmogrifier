@@ -4,8 +4,8 @@ import collections
 
 __parser = argparse.ArgumentParser(
     description=(
-        'Transmogrifier: Reads K8S configmaps and secrets '
-        'and generates all kinds of useful things'
+        'Transmogrifier: Reads Kubernetes configmaps and secrets, '
+        'generating all kinds of useful things'
     ),
 )
 
