@@ -4,25 +4,32 @@ import itertools
 import datetime
 
 import plugins.transmogrifiers
-import plugins.transmogrifiers.report.layouts
 
 from lib.decorators import classproperty
+from ... import transmogrifiers
 
 
-class ReportTransmogrifier(plugins.transmogrifiers.AbstractTransmogrifier):
+class ReportTransmogrifier(transmogrifiers.AbstractTransmogrifier):
     ''' Implementes report file generation '''
 
     def __init__(self, args):
+        import plugins.transmogrifiers.report.layouts
+
         super(ReportTransmogrifier, self).__init__(args, deserialize=False)
         self._layout = plugins.transmogrifiers.report.layouts.get(args.web_layout)
 
     @classproperty
-    def name(self):
+    def name(cls):
         return 'report'
 
-    @property
-    def description(self):
+    @classproperty
+    def description(cls):
         return 'Generates reports, various layouts available'
+
+    @classproperty
+    def arggroup(cls):
+        __import__('plugins.transmogrifiers.report.layouts')  # so th children cmdline args will appear
+        return 'Report Generation'
 
     def transmogrify(self):
 

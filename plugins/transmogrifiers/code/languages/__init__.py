@@ -23,24 +23,24 @@ class AbstractLanguage(object):
         self.__init_map(self.__get_init_map, self._init_map)
 
     @classproperty
-    def name(self):
-        raise NotImplementedError()
+    def name(cls):
+        raise NotImplementedError(lib.errmsg.not_implemented(cls))
 
     @property
     def extension(self):
-        raise NotImplementedError()
+        raise NotImplementedError(lib.errmsg.not_implemented(self.__class__))
 
     @property
     def _type_map(self):
-        raise NotImplementedError()
+        raise NotImplementedError(lib.errmsg.not_implemented(self.__class__))
 
     @property
     def _root_map(self):
-        raise NotImplementedError()
+        raise NotImplementedError(lib.errmsg.not_implemented(self.__class__))
 
     @property
     def _init_map(self):
-        raise NotImplementedError()
+        raise NotImplementedError(lib.errmsg.not_implemented(self.__class__))
 
     def __init_map(self, map, kwargs):
         for key, value in kwargs.items:
@@ -74,7 +74,7 @@ class AbstractLanguage(object):
 
         if handler is None:
             raise NotImplementedError(
-                'Child failed to implement handler for type: %s' % (type(key),)
+                'Child (%s) failed to implement handler for type: %s' % (self.__class__.__name__, type(key))
             )
 
         return handler
@@ -107,13 +107,22 @@ def get(name):
             return subclass
 
 
-plugins.import_att('plugins.transmogrifiers.code.languages', __file__)
+def __onload():
 
-lib.cmdline.command_line_parser.add_argument(
-    '--code-language', 'the target language for code generation',
-    choices=[
-        subclass.name
-        for subclass in AbstractLanguage.__subclasses__()
-    ]
-)
+    from ... import code
+
+    plugins.import_att('plugins.transmogrifiers.code.languages', __file__)
+
+    lib.cmdline.add(
+        code.CodeTransmogrifier.arggroup,
+        '--code-language',
+        help='the target language for code generation',
+        choices=[
+            subclass.name
+            for subclass in AbstractLanguage.__subclasses__()
+        ]
+    )
+
+
+__onload()
 

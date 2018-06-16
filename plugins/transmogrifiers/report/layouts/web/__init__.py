@@ -1,11 +1,11 @@
 import os
 
-import report.layouts
+from ... import layouts
 
 from lib.decorators import classproperty
 
 TEMPLATE_PATH = os.path.join(
-    __file__, report.layouts.DEFAULT_TEMPLATE_NAME
+    __file__, layouts.DEFAULT_TEMPLATE_NAME
 )
 
 EXT_2_CODE_HIGHLIGHT_CLASS = {
@@ -16,7 +16,7 @@ EXT_2_CODE_HIGHLIGHT_CLASS = {
 }
 
 
-class WebLayout(report.layouts.AbstractLayout):
+class WebLayout(layouts.AbstractLayout):
 
     @property
     def template(self):

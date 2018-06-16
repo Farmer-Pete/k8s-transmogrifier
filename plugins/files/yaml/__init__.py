@@ -1,5 +1,7 @@
 import plugins.files
 
+from lib.decorators import classproperty
+
 
 try:
     from io import StringIO
@@ -10,8 +12,8 @@ except ImportError:
 
 class YamlFilePlugin(plugins.files.AbstractFilePlguin):
 
-    @property
-    def extension(self):
+    @classproperty
+    def extension(cls):
         return '.yaml'
 
     def parse(self, content):

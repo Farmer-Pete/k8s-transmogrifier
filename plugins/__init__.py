@@ -1,12 +1,15 @@
 import os
+import importlib
 
 
-def import_att(root_dots, root_path):  # att = All The Things!
+def import_att(root_dots, root_path):
 
-    root_dir = os.path.basename(
-        os.path.dirname(root_path)
-    )
+    root_dir = os.path.dirname(root_path)
 
-    for name in os.listdir(root_dir):
-        __import__(root_dots + '.' + name)
+    for path in os.listdir(root_dir):
 
+        fullpath = os.path.join(root_dir, path)
+        name, ext = os.path.splitext(path)
+
+        if (os.path.isdir(fullpath) or ext == '.py') and name[:2] != '__':
+            importlib.import_module(root_dots + '.' + name)

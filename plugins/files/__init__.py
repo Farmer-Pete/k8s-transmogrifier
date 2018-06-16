@@ -1,3 +1,8 @@
+import lib.errmsg
+
+from lib.decorators import classproperty
+
+
 class AbstractFilePlguin(object):
 
     def validate(self, content):
@@ -7,12 +12,12 @@ class AbstractFilePlguin(object):
             return e
         return True
 
-    @property
-    def extension(self):
-        raise NotImplementedError()
+    @classproperty
+    def extension(cls):
+        raise NotImplementedError(lib.errmsg.not_implemented(cls))
 
     def parse(self, content):
-        raise NotImplementedError()
+        raise NotImplementedError(lib.errmsg.not_implemented(self.__class__))
 
 
 def validate(content, extension):

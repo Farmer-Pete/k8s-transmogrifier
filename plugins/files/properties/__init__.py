@@ -1,10 +1,12 @@
 import plugins.files
 
+from lib.decorators import classproperty
+
 
 class PropertiesFilePlugin(plugins.files.AbstractFilePlguin):
 
-    @property
-    def extension(self):
+    @classproperty
+    def extension(cls):
         return '.xml'
 
     def parse(self, content):

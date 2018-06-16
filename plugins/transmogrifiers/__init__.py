@@ -16,16 +16,20 @@ class AbstractTransmogrifier(object):
         )
 
     @classproperty
-    def name(self):
-        raise NotImplementedError()
+    def name(cls):
+        raise NotImplementedError(lib.errmsg.not_implemented(cls))
 
     @classproperty
-    def description(self):
-        raise NotImplementedError()
+    def description(cls):
+        raise NotImplementedError(lib.errmsg.not_implemented(cls))
+
+    @classproperty
+    def arggroup(cls):
+        raise NotImplementedError(lib.errmsg.not_implemented(cls))
 
     def transmogrify(self):
         ''' The main entry point of the class '''
-        raise NotImplementedError()
+        raise NotImplementedError(lib.errmsg.not_implemented(self.__class__))
 
 
 def execute(args):
@@ -36,10 +40,17 @@ def execute(args):
             subclass(args).transmogrify()
 
 
-plugins.import_att('plugins.transmogrifiers', __file__)
+def __onload():
+    plugins.import_att('plugins.transmogrifiers', __file__)
 
-for subclass in AbstractTransmogrifier.__subclasses__():
-    lib.cmdline.command_line_parser.add_argument(
-        '--' + subclass.name, subclass.description
-    )
+    for subclass in AbstractTransmogrifier.__subclasses__():
+        lib.cmdline.add(
+            subclass.arggroup,
+            '--' + subclass.name,
+            help=subclass.description,
+            action='store_true'
+        )
+
+
+__onload()
 

@@ -5,11 +5,13 @@ Transmogrifier - Translates config files into code and reports
 import lib.cmdline
 import plugins.transmogrifiers
 
+lib.cmdline.build()
+
 
 def main():
     ''' The main method '''
 
-    args = lib.cmdline.command_line_parser.parse_args()
+    args = lib.cmdline.parse()
 
     plugins.transmogrifiers.execute(args)
 

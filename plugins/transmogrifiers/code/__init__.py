@@ -3,27 +3,35 @@ import re
 import glob
 import itertools
 
-import lib.core
-import plugins.transmogrifiers
-import plugins.languages
+import lib.k8s
+
+from ... import transmogrifiers
 
 from lib.decorators import classproperty
 
 
-class CodeTransmogrifier(plugins.transmogrifiers.AbstractTransmogrifier):
+class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
     ''' Implementes code generation '''
 
+    ARG_GROUP = 'Code Generation'
+
     def __init__(self, args):
+        import plugins.transmogrifiers.code.languages
         super(CodeTransmogrifier, self).__init__(args)
-        self._language = plugins.languages.get(args.code_language)
+        self._language = plugins.transmogrifiers.code.languages.get(args.code_language)
 
     @classproperty
-    def name(self):
+    def name(cls):
         return 'code'
 
     @classproperty
-    def description(self):
+    def description(cls):
         return 'Generates code to load configurations, supports several languages'
+
+    @classproperty
+    def arggroup(cls):
+        __import__('plugins.transmogrifiers.code.languages')  # so th children cmdline args will appear
+        return 'Code Generation'
 
     def _split_file_name(self, file_name):
         # Don't retun the last component as that is the file extension
@@ -193,8 +201,8 @@ class CodeTransmogrifier(plugins.transmogrifiers.AbstractTransmogrifier):
     def generate_pod_objs(self, pod_type, files):
         ''' Generates the Java pod classes '''
 
-        configs = [filename for filename, filetype, _ in files if filetype == lib.core.K8SConfigs.CONFIGTYPE_CONFIGMAP]
-        secrets = [filename for filename, filetype, _ in files if filetype == lib.core.K8SConfigs.CONFIGTYPE_SECRET]
+        configs = [filename for filename, filetype, _ in files if filetype == lib.k8s.K8SConfigs.CONFIGTYPE_CONFIGMAP]
+        secrets = [filename for filename, filetype, _ in files if filetype == lib.k8s.K8SConfigs.CONFIGTYPE_SECRET]
 
         class_name = 'POD-%s-CONFIG' % pod_type
         class_name = ''.join(part.title() for part in class_name.split('-'))

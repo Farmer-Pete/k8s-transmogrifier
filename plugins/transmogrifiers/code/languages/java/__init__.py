@@ -1,7 +1,7 @@
 import os
 import jinja2
 
-import plugins.languages
+from ... import languages
 
 from lib.decorators import classproperty
 
@@ -9,7 +9,7 @@ TEMPLATE_NAME_CONFIG = 'Config.java.template'
 TEMPLATE_NAME_POD = 'Pod.java.template'
 
 
-class JavaLanaguage(plugins.languages.AbstractLanguage):
+class JavaLanaguage(languages.AbstractLanguage):
 
     def __init__(self, args):
         super(JavaLanaguage, self).__init__(args)
