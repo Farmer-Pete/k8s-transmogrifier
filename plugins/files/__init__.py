@@ -1,3 +1,4 @@
+import plugins
 import lib.errmsg
 
 from lib.decorators import classproperty
@@ -30,4 +31,10 @@ def parse(content, extension):
     for cls in AbstractFilePlguin.__subclasses__():
         if cls.extension == extension:
             return cls().parse(content)
+    raise ValueError(
+        'No handler available for file type: %s' % (extension,)
+    )
+
+
+plugins.import_att('plugins.files', __file__)
 

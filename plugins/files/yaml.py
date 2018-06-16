@@ -1,5 +1,4 @@
-import plugins.files
-
+from . import AbstractFilePlguin
 from lib.decorators import classproperty
 
 
@@ -10,7 +9,7 @@ except ImportError:
     from SringIO import StringIO
 
 
-class YamlFilePlugin(plugins.files.AbstractFilePlguin):
+class YamlFilePlugin(AbstractFilePlguin):
 
     @classproperty
     def extension(cls):

@@ -1,13 +1,12 @@
-import plugins.files
-
+from . import AbstractFilePlguin
 from lib.decorators import classproperty
 
 
-class PropertiesFilePlugin(plugins.files.AbstractFilePlguin):
+class PropertiesFilePlugin(AbstractFilePlguin):
 
     @classproperty
     def extension(cls):
-        return '.xml'
+        return '.properties'
 
     def parse(self, content):
         import configparser

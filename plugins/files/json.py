@@ -1,9 +1,8 @@
-import plugins.files
-
+from . import AbstractFilePlguin
 from lib.decorators import classproperty
 
 
-class JsonFilePlugin(plugins.files.AbstractFilePlguin):
+class JsonFilePlugin(AbstractFilePlguin):
 
     @classproperty
     def extension(cls):

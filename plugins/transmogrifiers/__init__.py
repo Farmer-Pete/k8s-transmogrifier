@@ -6,8 +6,8 @@ import lib.cmdline
 
 from lib.decorators import classproperty
 
-ArgExtra = collections.namedtuple('ArgExtra', ('flag', 'description', 'options'))
-ArgExtra.__new__.__defaults__ = (dict(),)  # options default to empaty dict
+ArgExtra = collections.namedtuple('ArgExtra', ('flag', 'description', 'options', 'group'))
+ArgExtra.__new__.__defaults__ = (dict(), None)  # options default to empty dict
 
 
 class AbstractTransmogrifier(object):
@@ -71,7 +71,7 @@ def __onload():
 
         for argextra in subclass.argextras:
             lib.cmdline.add(
-                subclass.arggroup,
+                argextra.group or subclass.arggroup,
                 '--' + subclass.name + '-' + argextra.flag,
                 help=argextra.description,
                 metavar=argextra.flag.upper(),

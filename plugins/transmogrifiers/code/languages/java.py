@@ -1,24 +1,11 @@
-import os
-import jinja2
+import plugins
 
 from .. import languages
 
 from lib.decorators import classproperty
 
-TEMPLATE_NAME_CONFIG = 'Config.java.template'
-TEMPLATE_NAME_POD = 'Pod.java.template'
-
 
 class JavaLanaguage(languages.AbstractLanguage):
-
-    def __init__(self, args):
-        super(JavaLanaguage, self).__init__(args)
-
-        with open(os.path.join(self._args.templates, self.TEMPLATE_NAME_CONFIG)) as tpl:
-            self.template_config = jinja2.Template(tpl.read())
-
-        with open(os.path.join(self._args.templates, self.TEMPLATE_NAME_POD)) as tpl:
-                self.template_pod = jinja2.Template(tpl.read())
 
     @classproperty
     def name(self):
@@ -27,6 +14,24 @@ class JavaLanaguage(languages.AbstractLanguage):
     @property
     def extension(self):
         return ".java"
+
+    @property
+    def template_config(self):
+        with open(plugins.resource_file(__file__, 'Config.java.template')) as tpl:
+            return tpl.read()
+
+    @property
+    def template_pod(self):
+        with open(plugins.resource_file(__file__, 'Pod.java.template')) as tpl:
+            return tpl.read()
+
+    @classproperty
+    def argextras(cls):
+        from plugins.transmogrifiers import ArgExtra
+
+        return [
+            ArgExtra('package', 'package name of the generated files')
+        ]
 
     @property
     def _type_map(self):

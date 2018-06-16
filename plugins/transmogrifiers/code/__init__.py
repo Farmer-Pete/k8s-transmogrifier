@@ -29,7 +29,7 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
 
     @classproperty
     def description(cls):
-        return 'generates code to load configurations'
+        return 'generates code libraries'
 
     @classproperty
     def arggroup(cls):
@@ -43,6 +43,11 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
     @classproperty
     def deserialize_flag(cls):
         return True
+
+    @classproperty
+    def argextras(cls):
+        from . import languages
+        return list(languages.argextras())
 
     def _split_file_name(self, file_name):
         # Don't retun the last component as that is the file extension
@@ -158,7 +163,7 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
                 'parent': parent
             }
 
-    def generate_config_objs(self, file_name, file_type, file_parts, config,
+    def generate_config_objs(self, target_dir, file_name, file_type, file_parts, config,
                              parent=None, is_abstract=False, is_secret=False):
         ''' Generates the Java config classes '''
 
@@ -191,11 +196,11 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
         if not variables and not is_abstract:
             return
 
-        target = os.path.join(self._configs.output, class_name + self._language.extension)
+        target = os.path.join(target_dir, class_name + self._language.extension)
 
         with open(target, 'w') as code:
             code.write(
-                self.template_config.render(
+                self._language.render_config(
                     variables=variables,
                     class_name=class_name,
                     config_file=file_name,
@@ -209,7 +214,7 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
 
         self._prettify(target)
 
-    def generate_pod_objs(self, pod_type, files):
+    def generate_pod_objs(self, target_dir, pod_type, files):
         ''' Generates the Java pod classes '''
 
         configs = [filename for filename, filetype, _ in files if filetype == lib.k8s.K8SConfigs.CONFIGTYPE_CONFIGMAP]
@@ -228,14 +233,14 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
                 self._split_file_name(secret)) for secret in secrets)
 
         for obj in list(objects):
-            if not os.path.exists(os.path.join(self._configs.output, obj + self._language.extension)):
+            if not os.path.exists(os.path.join(target_dir, obj + self._language.extension)):
                 objects.remove(obj)
 
-        target = os.path.join(self._configs.output, class_name + self._language.extension)
+        target = os.path.join(target_dir, class_name + self._language.extension)
 
         with open(target, 'w') as code:
             code.write(
-                self.template_pod.render(
+                self._language.render_pod(
                     pod_type=pod_type,
                     class_name=class_name,
                     configs=sorted(configs),
@@ -260,11 +265,11 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
             os.unlink(path)
 
         for metadata in self.hierarchize_config(configs.configmaps):
-            self.generate_config_objs(**metadata)
+            self.generate_config_objs(output, **metadata)
 
         for metadata in self.hierarchize_config(configs.secrets):
-            self.generate_config_objs(is_secret=True, **metadata)
+            self.generate_config_objs(output, is_secret=True, **metadata)
 
         for pod_type, files in configs.pods.items():
-            self.generate_pod_objs(pod_type, files)
+            self.generate_pod_objs(output, pod_type, files)
 

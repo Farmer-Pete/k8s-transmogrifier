@@ -1,15 +1,14 @@
-import plugins.files
-
+from . import AbstractFilePlguin
 from lib.decorators import classproperty
 
 
-class XmlFilePlugin(plugins.files.AbstractFilePlguin):
+class XmlFilePlugin(AbstractFilePlguin):
 
     @classproperty
     def extension(cls):
         return '.xml'
 
     def parse(self, content):
-        import xml
+        import xml.etree.ElementTree
         return xml.etree.ElementTree.fromstring(content)
 
