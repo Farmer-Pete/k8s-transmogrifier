@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Config - Generated: {{timestamp}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.red-deep_purple.min.css" /> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+    <style type="text/css">
+
+        main {
+            margin: 5em;
+        }
+
+        section {
+            max-width: 75%;
+            margin-top: 2em !important;
+        }
+
+        pre {
+            width: 75vw;
+            overflow: auto;
+        }
+
+        header, .header {
+            padding: 0.5em;
+        }
+
+        h4 a, h4 i, header i {
+            color: inherit !important;
+        }
+
+        section.invalid, .mdl-list .invalid {
+            background-color: red;
+        }
+
+        .mdl-list .invalid a, .mdl-list .invalid i {
+            color: white !important;
+        }
+
+        section.invalid .invalid_msg {
+            display: block;
+            background: white;
+            font-weight: bold;
+            font-size: 125%;
+            padding: 1em;
+            text-align: center;
+        }
+
+        section .invalid_msg {
+            display: none;
+        }
+
+        table.summary tr td {
+            cursor: crosshair;
+            padding: 0px;
+            width: 10px;
+            height: 16px;
+            line-height: 16px;
+            font-size: 16px;
+        }
+
+        table.summary tr td a {
+            text-decoration: none;
+            display: block;
+            height: 100%;
+            width: 100%;
+            cursor: crosshair;
+        }
+
+        table.summary tr td.podname {
+            background: transparent;
+            white-space: nowrap;
+            cursor: auto;
+        }
+
+        table.summary tr:hover td.podname {
+            background: black;
+            color: white;
+        }
+
+        table.summary tr:hover td.podname a {
+            color: white;
+        }
+
+        table.summary {
+            margin-bottom: 5em;
+        }
+
+        .mdl-badge.invalid::after {
+            background: red;
+        }
+
+    </style>
+
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body class="mdl-layout mdl-js-layout">
+    <a id="top"></a>
+    <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">Sections</span>
+        <nav class="mdl-navigation">
+            <a class="mdl-navigation__link" href="#section-configmaps">
+                <span class="{%if invalid_files.configmaps %}invalid mdl-badge{% endif %}" data-badge="{{invalid_files.configmaps | length}}">
+                    <i class="material-icons mdl-list__item-icon">insert_drive_file</i> Config Maps</a>
+                </span>
+            <a class="mdl-navigation__link" href="#section-secrets">
+                <span class="{%if invalid_files.secrets %}invalid mdl-badge{% endif %}" data-badge="{{invalid_files.secrets | length}}">
+                <i class="material-icons mdl-list__item-icon">lock</i> Secrets</a>
+                </span>
+            <a class="mdl-navigation__link" href="#section-pods">
+                <span class="{%if invalid_files.pods %}invalid mdl-badge{% endif %}" data-badge="{{invalid_files.pods | length}}">
+                    <i class="material-icons mdl-list__item-icon">dashboard</i> Pods</a>
+                </span>
+            <a class="mdl-navigation__link" href="#summary">
+                <i class="material-icons mdl-list__item-icon">grid_on</i> Summary</a>
+        </nav>
+     </div>
+     <header class="mdl-layout__header mdl-layout__header--scroll mdl-color--primary">
+         <div class="mdl-layout--large-screen-only mdl-layout__header-row"></div>
+         <div class="mdl-layout--large-screen-only mdl-layout__header-row">
+             <h3>Config</h3>
+         </div>
+         <div class="mdl-layout--large-screen-only mdl-layout__header-row">
+             <h6>Report generated on {{timestamp}}<h6>
+         </div>
+     </header>
+
+
+    <ul class="mdl-list">
+    {% for filename in invalid_files.configmaps + invalid_files.secrets %}
+        <li class="mdl-list__item">
+            <span class="mdl-list__item-primary-content">
+                <i class="material-icons mdl-list__item-icon">error</i>
+                <a href="#file-{{filename|e}}">{{filename|e}}</a>&nbsp;has invalid syntax
+            </span>
+        </li>
+    {% endfor %}
+    {% for podname, filename in invalid_files.pods %}
+        <li class="mdl-list__item">
+            <span class="mdl-list__item-primary-content">
+                <i class="material-icons mdl-list__item-icon">error</i>
+                <a href="#pod-{{podname|e}}">{{podname|e}}</a>&nbsp;has invalid filename "{{filename|e}}"
+            </span>
+        </li>
+    {% endfor %}
+    </ul>
+
+     <main>
+         <h4 id="section-configmaps" class="mdl-color--accent mdl-color-text--accent-contrast header">
+             <i class="material-icons mdl-list__item-icon">insert_drive_file</i> Config Maps
+         </h4>
+
+        {% for filename, content, is_valid, cls, pods in configmaps_list %}
+        <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp {% if not is_valid %}invalid{% endif %}">
+            <a id="file-{{filename}}"></a>
+            <div class="mdl-card__supporting-text">
+                <div class="invalid_msg">
+                    <i class="material-icons mdl-list__item-icon">error</i>
+                    This configuration is invalid!
+                </div>
+                <div>
+                    <header class="mdl-color--primary-dark mdl-color-text--primary-contrast"> <i class="material-icons mdl-list__item-icon">insert_drive_file</i> {{filename|e}}</header>
+                    <pre><code class="{{cls}}">{{content|e}}</code></pre>
+                    <div>
+                        {% for pod in pods %}
+                        <span class="mdl-chip">
+                            <a href="#pod-{{pod|e}}">
+                                <span class="mdl-chip__contact"><i class="material-icons">dashboard</i></span>
+                                <span class="mdl-chip__text">{{pod|e}}</span>
+                            </a>
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endfor %}
+
+        <h4 id="section-secrets" class="mdl-color--accent mdl-color-text--accent-contrast header">
+            <i class="material-icons mdl-list__item-icon">lock</i> Secrets <small><a href="#top">[ TOP ]</a><small>
+        </h4>
+
+        {% for filename, content, is_valid, cls, pods in secrets_list %}
+        <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp {% if not is_valid %}invalid{% endif %}">
+            <a id="file-{{filename}}"></a>
+            <div class="mdl-card__supporting-text">
+                <div class="invalid_msg">
+                    <i class="material-icons mdl-list__item-icon">error</i>
+                    This configuration is invalid!
+                </div>
+                <div>
+                    <header class="mdl-color--primary-dark mdl-color-text--primary-contrast"> <i class="material-icons mdl-list__item-icon">lock</i> {{filename|e}}</header>
+                    <pre><code class="{{cls}}">{{content|e}}</code></pre>
+                    <div>
+                        {% for pod in pods %}
+                        <span class="mdl-chip">
+                            <span class="mdl-chip__text">
+                                <a href="#pod-{{pod|e}}">
+                                    <i class="material-icons">dashboard</i>{{pod|e}}</a>
+                            </span>
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endfor %}
+
+        <h4 id="section-pods" class="mdl-color--accent mdl-color-text--accent-contrast header">
+            <i class="material-icons mdl-list__item-icon">dashboard</i> Pods <small><a href="#top">[ TOP ]</a><small>
+        </h4>
+
+        {% for podname, filenames in pods_list %}
+        <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card__supporting-text">
+                <div>
+                    <a id="pod-{{podname|e}}"></a>
+                    <header class="mdl-color--primary-dark mdl-color-text--primary-contrast"> <i class="material-icons mdl-list__item-icon">dashboard</i> {{podname|e}}</header>
+                    <ul class="mdl-list">
+                        {% for filename, type, is_valid in filenames %}
+                        <li class="mdl-list__item">
+                                <span class="mdl-list__item-primary-content {% if not is_valid %}invalid{% endif %}">
+                                {% if not is_valid %}<i class="material-icons mdl-list__item-icon">error</i>
+                                {% elif type == "cm" %}<i class="material-icons mdl-list__item-icon">insert_drive_file</i>
+                                {% elif type == "sec" %}<i class="material-icons mdl-list__item-icon">lock</i>{% endif %}
+                                <a href="#file-{{filename|e}}">{{filename|e}}</a>
+                            </span>
+                        </li>
+                        {% endfor %}
+                   </ul>
+                </div>
+            </div>
+        </section>
+        {% endfor %}
+
+        <h4 id="summary" class="mdl-color--accent mdl-color-text--accent-contrast header">
+            <i class="material-icons mdl-list__item-icon">grid_on</i> Summary <small><a href="#top">[ TOP ]</a><small>
+        </h4>
+        <table class="summary">
+            {% for podname, filelist in pod_files_matrix %}
+            <tr>
+                <td class="podname"><a href="#pod-{{podname}}">{{podname}}</a></td>
+                {% for filename, exists in filelist %}
+                <td
+                    class="{% if exists %}mdl-color--green{% else %}mdl-color--red-100{% endif %}"
+                    id="{{podname}}-{{filename}}"
+                ><a href="#file-{{filename}}">&nbsp;</a></td>
+                {% endfor %}
+            </td>
+            {% endfor %}
+        </table>
+
+        {% for podname, filelist in pod_files_matrix %}
+            {% for filename, exists in filelist %}
+            <div class="mdl-tooltip" data-mdl-for="{{podname}}-{{filename}}">{{filename}}</div>
+            {% endfor %}
+        {% endfor %}
+
+    </main>
+
+</body>
+</html>
+
+<!-- vim: set syntax=html: -->

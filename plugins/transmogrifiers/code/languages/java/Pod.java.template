@@ -1,0 +1,67 @@
+/* vim: set syntax=java: */
+
+/*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ * This is an auto-generated file.
+ * Do not edit!
+ *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.io.IOException;
+
+public class {{class_name}} {
+
+    public static String POD_TYPE = "{{pod_type}}";
+
+    private static String[] CONFIGS = {
+        {% for config in configs -%}
+        "{{config}}" {% if not loop.last %},{% endif %}
+        {% endfor %}
+    };
+
+    private static String[] SECRETS = {
+        {% for secret in secrets -%}
+        "{{secret}}" {% if not loop.last %},{% endif %}
+        {% endfor %}
+    };
+
+    {% for obj in objects -%}
+    public {{obj}} {{obj}} = null;
+    {% endfor %}
+
+    public {{class_name}}() throws IOException {
+        this(new ArrayList<String>());
+    }
+
+    public {{class_name}}(List<String> blackList) throws IOException {
+
+        ConfigMap configMap = ConfigMap.init();
+
+        for (String key: {{class_name}}.CONFIGS) {
+            if (blackList.contains(key)) {
+                continue;
+            } // To avoid some files we know we don't want to verify
+
+            if (!configMap.verifyConfig(key) && key.startsWith(ConfigMap.KEY_CONFIG_PREFIX)) {
+                throw new IOException("Could not find config file: " + key);
+            }
+        }
+
+        for (String key: {{class_name}}.SECRETS) {
+            if (blackList.contains(key)) {
+                continue;
+            } // To avoid some secrets we know we don't want to verify
+
+            if (!configMap.verifySecret(key) && key.startsWith(ConfigMap.KEY_SECRET_PREFIX)) {
+                throw new IOException("Could not find secret file: " + key);
+            }
+        }
+
+        {% for obj in objects -%}
+        this.{{obj}} = new {{obj}}(configMap);
+        {% endfor %}
+
+    }
+}

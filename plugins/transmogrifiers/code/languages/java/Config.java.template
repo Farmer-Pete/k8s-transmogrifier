@@ -1,0 +1,90 @@
+/* vim: set syn=java: */
+
+/*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ * This is an auto-generated file.
+ * Do not edit!
+ *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public {% if is_abstract %}abstract {% endif %} class {{class_name}} {% if parent %}extends {{parent}}{% endif %} {
+
+    private static final Logger log = LoggerFactory.getLogger({{class_name}}.class);
+    {% for var in variables %}
+    private {{var.type}} {{var.var}} = {{var.init}};
+    {% endfor %}
+
+    {% if is_secret %}
+    public Map<String, String> _map;
+    {% else %}
+    public Map<String, Object> _map;
+    {% endif %}
+
+    {% if not is_abstract %}
+    public {{class_name}}() throws IOException {
+        this(ConfigMap.init());
+    }
+
+    public {{class_name}}(ConfigMap configMap) throws IOException {
+    {% if is_secret %}
+        this._map = configMap.getSecret("{{config_file}}");
+
+        {% for var in variables %}
+        this.{{var.var}} = this._map.get("{{var.name}}");
+        {% endfor %}
+
+    {% else %}
+        this._map = configMap.getConfig("{{config_file}}");
+
+        {% for var in variables %}
+        if (!this._map.containsKey("{{var.name}}")) {
+            {{class_name}}.log.warn(
+                "Configuration setting '{{var.name}}' does not exist in config '{{config_file}}'"
+            );
+        } else if (this._map.get("{{var.name}}") == null) {
+            {{class_name}}.log.warn(
+                "Configuration setting '{{var.name}}' does exists in config '{{config_file}}', but is NULL, ignoring"
+            );
+        } else if (!(this._map.get("{{var.name}}") instanceof {{var.root_type}})) {
+            throw new IOException(
+                "Configuration setting '{{var.name}}' in config '{{config_file}}' is a " +
+                    this._map.get("{{var.name}}").getClass().getName() +
+                    ", when it should be a {{var.root_type}}"
+            );
+        } else {
+            this.{{var.var}} = ({{var.type}})this._map.get("{{var.name}}");
+        }
+        {% endfor %}
+
+    {%-endif %}
+    }
+    {% endif %}
+
+    {% if is_abstract %}
+    {% for var in variables %}
+    public abstract {{var.type}} get{{var.Var}}();
+    public abstract {{var.type}} get{{var.Var}}({{var.type}} defaultValue);
+
+    {% endfor %}
+    {% else %}
+
+    {% for var in variables %}
+    public {{var.type}} get{{var.Var}}() {
+        return this.{{var.var}};
+    }
+
+    public {{var.type}} get{{var.Var}}({{var.type}} defaultValue) {
+        if (this.{{var.var}} == null) {
+            return defaultValue;
+        }
+        return this.{{var.var}};
+    }
+    {% endfor %}
+    {% endif %}
+}
