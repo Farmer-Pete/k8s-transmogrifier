@@ -32,7 +32,7 @@ class AbstractLayout(object):
 def get(name):
     for layout in AbstractLayout.__subclasses__():
         if layout.name == name:
-            return layout
+            return layout()
 
 
 def __onload():

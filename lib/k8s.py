@@ -66,7 +66,7 @@ class K8SConfigs(object):
             content = f.read()
 
         try:
-            result = plugins.files.parse(content)
+            result = plugins.files.parse(content, ext)
         except Exception as e:
             is_valid = False
             if stomp_error:

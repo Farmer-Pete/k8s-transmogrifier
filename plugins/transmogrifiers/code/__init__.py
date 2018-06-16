@@ -13,12 +13,15 @@ from lib.decorators import classproperty
 class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
     ''' Implementes code generation '''
 
-    ARG_GROUP = 'Code Generation'
-
     def __init__(self, args):
-        import plugins.transmogrifiers.code.languages
+        from . import languages
         super(CodeTransmogrifier, self).__init__(args)
-        self._language = plugins.transmogrifiers.code.languages.get(args.code_language)
+
+        self._configs = None
+        self._language = languages.get(args.code_language)
+
+        if not self._language:
+            lib.cmdline.usage('Either missing or invalid code language provided')
 
     @classproperty
     def name(cls):
@@ -26,12 +29,20 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
 
     @classproperty
     def description(cls):
-        return 'Generates code to load configurations'
+        return 'generates code to load configurations'
 
     @classproperty
     def arggroup(cls):
         __import__('plugins.transmogrifiers.code.languages')  # so th children cmdline args will appear
         return 'Code Generation'
+
+    @classproperty
+    def argmeta(cls):
+        return 'DIRECTORY'
+
+    @classproperty
+    def deserialize_flag(cls):
+        return True
 
     def _split_file_name(self, file_name):
         # Don't retun the last component as that is the file extension
@@ -180,7 +191,7 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
         if not variables and not is_abstract:
             return
 
-        target = os.path.join(self._args.output, class_name + self._language.extension)
+        target = os.path.join(self._configs.output, class_name + self._language.extension)
 
         with open(target, 'w') as code:
             code.write(
@@ -217,10 +228,10 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
                 self._split_file_name(secret)) for secret in secrets)
 
         for obj in list(objects):
-            if not os.path.exists(os.path.join(self.args.output, obj + self._language.extension)):
+            if not os.path.exists(os.path.join(self._configs.output, obj + self._language.extension)):
                 objects.remove(obj)
 
-        target = os.path.join(self.args.output, class_name + self._language.extension)
+        target = os.path.join(self._configs.output, class_name + self._language.extension)
 
         with open(target, 'w') as code:
             code.write(
@@ -235,23 +246,25 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
 
         self._prettify(target)
 
-    def transmogrify(self):
+    def transmogrify(self, configs, output):
+
+        self._configs = configs
 
         paths = glob.glob(
             os.path.join(
-                self._args.output, '*' + self._language.extension
+                output, '*' + self._language.extension
             )
         )
 
         for path in paths:
             os.unlink(path)
 
-        for metadata in self.hierarchize_config(self.configs.configmaps):
+        for metadata in self.hierarchize_config(configs.configmaps):
             self.generate_config_objs(**metadata)
 
-        for metadata in self.hierarchize_config(self.configs.secrets):
+        for metadata in self.hierarchize_config(configs.secrets):
             self.generate_config_objs(is_secret=True, **metadata)
 
-        for pod_type, files in self.configs.pods.items():
+        for pod_type, files in configs.pods.items():
             self.generate_pod_objs(pod_type, files)
 

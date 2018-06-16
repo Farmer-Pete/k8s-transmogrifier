@@ -1,7 +1,7 @@
 import os
 import jinja2
 
-from plugins.transmogrifiers.code import languages
+from .. import languages
 
 from lib.decorators import classproperty
 

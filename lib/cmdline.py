@@ -11,7 +11,7 @@ __parser = argparse.ArgumentParser(
 
 __parser.add_argument(
     'configdir', metavar='CONFIG_DIR',
-    help='The directory to the k8s config files'
+    help='the directory to the k8s config files'
 )
 
 __parser_buffer = collections.defaultdict(list)
@@ -19,6 +19,10 @@ __parser_buffer = collections.defaultdict(list)
 
 def add(group, flag, **kwargs):
     __parser_buffer[group].append([flag, kwargs])
+
+
+def usage(message=None):
+    __parser.error(message=message)
 
 
 def build():

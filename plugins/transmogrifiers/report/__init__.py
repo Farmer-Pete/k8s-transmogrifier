@@ -3,7 +3,7 @@ import time
 import itertools
 import datetime
 
-import plugins.transmogrifiers
+import lib.cmdline
 
 from lib.decorators import classproperty
 from ... import transmogrifiers
@@ -13,10 +13,14 @@ class ReportTransmogrifier(transmogrifiers.AbstractTransmogrifier):
     ''' Implementes report file generation '''
 
     def __init__(self, args):
-        import plugins.transmogrifiers.report.layouts
+        from . import layouts
+        super(ReportTransmogrifier, self).__init__(args)
 
-        super(ReportTransmogrifier, self).__init__(args, deserialize=False)
-        self._layout = plugins.transmogrifiers.report.layouts.get(args.web_layout)
+        self._layout = layouts.get(args.report_layout)
+        self._configs = None
+
+        if not self._layout:
+            lib.cmdline.usage('Either missing or invalid report layout provided')
 
     @classproperty
     def name(cls):
@@ -24,14 +28,32 @@ class ReportTransmogrifier(transmogrifiers.AbstractTransmogrifier):
 
     @classproperty
     def description(cls):
-        return 'Generates reports'
+        return 'generates reports'
+
+    @classproperty
+    def deserialize_flag(cls):
+        return False
 
     @classproperty
     def arggroup(cls):
         __import__('plugins.transmogrifiers.report.layouts')  # so th children cmdline args will appear
         return 'Report Generation'
 
-    def transmogrify(self):
+    @classproperty
+    def argmeta(cls):
+        return 'FILE'
+
+    @classproperty
+    def argextras(cls):
+        return [
+            transmogrifiers.ArgExtra(
+                flag='title',
+                description='title displayed on report',
+                options={'default': 'Configuration Report'}
+            )
+        ]
+
+    def transmogrify(self, configs, output):
 
         invalid_files = {
             'configmaps': [],
@@ -39,26 +61,30 @@ class ReportTransmogrifier(transmogrifiers.AbstractTransmogrifier):
             'pods': []
         }
 
-        for podname, podfiles in self.configs.pods.items():
+        self._configs = configs
+
+        for podname, podfiles in configs.pods.items():
             for filename, _, is_valid in podfiles:
                 if not is_valid:
                     invalid_files['pods'].append((podname, filename))
 
-        with open(self.args.report_file, 'w') as report:
+        with open(output, 'w') as report:
 
             now = (datetime.datetime.now()
                    .strftime('%A, %B %d, %Y %I:%M.%S %p ') + '/'.join(time.tzname))
 
             report.write(
-                self.layout.render(
-                    configmaps_list=self._config_smash(self.configs.configmaps, invalid_files['configmaps']),
-                    secrets_list=self._config_smash(self.configs.secrets, invalid_files['secrets']),
-                    pods_list=sorted(self.configs.pods.items()),
+                self._layout.render(
+                    title=self._args.report_title,
+                    configmaps_list=self._config_smash(
+                        configs.configmaps, invalid_files['configmaps']),
+                    secrets_list=self._config_smash(configs.secrets, invalid_files['secrets']),
+                    pods_list=sorted(configs.pods.items()),
                     timestamp=now,
                     invalid_files=invalid_files,
                     pod_files_matrix=self._pods_2_files_matrix(
-                        self.configs.pods,
-                        list(self.configs.configmaps.keys()) + list(self.configs.secrets.keys())
+                        configs.pods,
+                        list(configs.configmaps.keys()) + list(configs.secrets.keys())
                     )
                 )
             )
@@ -75,8 +101,8 @@ class ReportTransmogrifier(transmogrifiers.AbstractTransmogrifier):
                 filename,
                 content,
                 is_valid,
-                self.EXT_2_CODE_HIGHLIGHT_CLASS[ext],
-                self.configs.rpods[filename]
+                ext,
+                self._configs.rpods[filename]
             ])
 
         return smashed

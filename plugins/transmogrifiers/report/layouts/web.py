@@ -1,11 +1,12 @@
-import os
+import plugins
 
-from plugins.transmogrifiers.report import layouts
+from .. import layouts
 
 from lib.decorators import classproperty
 
-TEMPLATE_PATH = os.path.join(
-    __file__, layouts.DEFAULT_TEMPLATE_NAME
+TEMPLATE_PATH = plugins.resource_file(
+    __file__,
+    layouts.DEFAULT_TEMPLATE_NAME
 )
 
 EXT_2_CODE_HIGHLIGHT_CLASS = {
@@ -30,4 +31,10 @@ class WebLayout(layouts.AbstractLayout):
     @property
     def description(self):
         return 'A full-featured HTML report that can be published'
+
+    def render(self, **kwargs):
+        return super(WebLayout, self).render(
+            ext_2_highlight=EXT_2_CODE_HIGHLIGHT_CLASS,
+            **kwargs
+        )
 
