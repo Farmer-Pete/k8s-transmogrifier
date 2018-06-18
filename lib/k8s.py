@@ -36,7 +36,7 @@ class K8SConfigs(object):
             self.secrets.update(self._deserialize(filepath, deserialize, stomp_errors))
 
         with open(os.path.join(directory, self.DIR_METADATA, self.FILE_METADATA_PODS)) as f:
-            reader = csv.reader(f)
+            reader = csv.reader(f, skipinitialspace=True)
             for pod, configfile, configtype in reader:
 
                 is_valid = True

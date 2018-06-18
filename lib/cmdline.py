@@ -1,5 +1,8 @@
+import sys
 import argparse
 import collections
+
+import lib.testing
 
 
 __parser = argparse.ArgumentParser(
@@ -34,5 +37,10 @@ def build():
 
 
 def parse():
+
+    if '--test' in sys.argv:
+        lib.testing.test()
+        sys.exit(0)
+
     return __parser.parse_args()
 
