@@ -1,6 +1,6 @@
 ## K8S Transmogrifier ##
 
-![transmogrifier](https://vignette.wikia.nocookie.net/candh/images/9/96/Transmogrifier.png/revision/latest?cb=20060321211524)
+![transmogrifier](https://disemvowel.files.wordpress.com/2010/05/trans-1-5.gif)
 
 ```
 usage: transmogrifier.py [-h] [--code DIRECTORY] [--code-language {java}]
