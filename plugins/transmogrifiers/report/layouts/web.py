@@ -1,12 +1,12 @@
 import plugins
 
-from .. import layouts
+from . import AbstractLayout, DEFAULT_TEMPLATE_NAME
 
 from lib.decorators import classproperty
 
 TEMPLATE_PATH = plugins.resource_file(
     __file__,
-    layouts.DEFAULT_TEMPLATE_NAME
+    DEFAULT_TEMPLATE_NAME
 )
 
 EXT_2_CODE_HIGHLIGHT_CLASS = {
@@ -17,7 +17,7 @@ EXT_2_CODE_HIGHLIGHT_CLASS = {
 }
 
 
-class WebLayout(layouts.AbstractLayout):
+class WebLayout(AbstractLayout):
 
     @property
     def template(self):

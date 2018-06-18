@@ -3,6 +3,7 @@ import jinja2
 import plugins
 import lib.cmdline
 
+from lib.py23 import unicode
 from lib.decorators import classproperty
 
 NAME_TYPE_MAPPING = {
@@ -87,7 +88,7 @@ class AbstractLanguage(object):
 
         if field in NAME_TYPE_MAPPING:
             handler = data.get(NAME_TYPE_MAPPING[field])
-        elif isinstance(key, str):
+        elif isinstance(key, (str, unicode)):
             handler = data.get(str)
         elif isinstance(key, bool):
             handler = data.get(bool)

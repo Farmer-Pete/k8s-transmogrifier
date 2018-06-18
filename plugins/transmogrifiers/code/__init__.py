@@ -5,12 +5,12 @@ import itertools
 
 import lib.k8s
 
-from ... import transmogrifiers
+from .. import AbstractTransmogrifier
 
 from lib.decorators import classproperty
 
 
-class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
+class CodeTransmogrifier(AbstractTransmogrifier):
     ''' Implementes code generation '''
 
     def __init__(self, args):

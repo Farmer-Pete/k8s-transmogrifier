@@ -6,10 +6,10 @@ import datetime
 import lib.cmdline
 
 from lib.decorators import classproperty
-from ... import transmogrifiers
+from .. import AbstractTransmogrifier, ArgExtra
 
 
-class ReportTransmogrifier(transmogrifiers.AbstractTransmogrifier):
+class ReportTransmogrifier(AbstractTransmogrifier):
     ''' Implementes report file generation '''
 
     def __init__(self, args):
@@ -46,7 +46,7 @@ class ReportTransmogrifier(transmogrifiers.AbstractTransmogrifier):
     @classproperty
     def argextras(cls):
         return [
-            transmogrifiers.ArgExtra(
+            ArgExtra(
                 flag='title',
                 description='title displayed on report',
                 options={'default': 'Configuration Report'}

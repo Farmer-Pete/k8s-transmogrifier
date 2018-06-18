@@ -1,12 +1,7 @@
+from __future__ import absolute_import
 from . import AbstractFilePlguin
 from lib.decorators import classproperty
-
-
-try:
-    from io import StringIO
-except ImportError:
-    # Fallback for python 2
-    from SringIO import StringIO
+from lib.py23 import StringIO, unicode
 
 
 class YamlFilePlugin(AbstractFilePlguin):
@@ -17,5 +12,5 @@ class YamlFilePlugin(AbstractFilePlguin):
 
     def parse(self, content):
         import yaml
-        return yaml.safe_load(StringIO(content))
+        return yaml.safe_load(StringIO(unicode(content)))
 

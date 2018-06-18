@@ -4,12 +4,12 @@ import jinja2
 import plugins
 import lib.cmdline
 
-from .. import languages
+from . import AbstractLanguage
 
 from lib.decorators import classproperty
 
 
-class JavaLanaguage(languages.AbstractLanguage):
+class JavaLanaguage(AbstractLanguage):
 
     def __init__(self, args):
         super(JavaLanaguage, self).__init__(args)

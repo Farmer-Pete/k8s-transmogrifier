@@ -1,5 +1,6 @@
 from . import AbstractFilePlguin
 from lib.decorators import classproperty
+from lib.py23 import unicode
 
 
 class PropertiesFilePlugin(AbstractFilePlguin):
@@ -11,6 +12,6 @@ class PropertiesFilePlugin(AbstractFilePlguin):
     def parse(self, content):
         import configparser
         config = configparser.RawConfigParser()
-        config.read_string('[root]\n' + content)
+        config.read_string(unicode('[root]\n' + content))
         return dict(config.items('root'))
 
