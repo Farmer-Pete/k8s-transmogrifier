@@ -14,7 +14,8 @@ class AbstractLanguage(object):
 
     _deserialize_config = True
 
-    def __init__(self):
+    def __init__(self, args):
+        self._args = args
         self.__get_type_map = {}
         self.__get_root_map = {}
         self.__get_init_map = {}
@@ -57,6 +58,15 @@ class AbstractLanguage(object):
     @property
     def _init_map(self):
         raise NotImplementedError(lib.errmsg.not_implemented(self.__class__))
+
+    def prepare(self, configs, target_dir):
+        return
+
+    def _prerender_config(self, kwargs):
+        return
+
+    def _prerender_pod(self, kwargs):
+        return
 
     def __init_map(self, map, kwargs):
         for key, value in kwargs.items():
@@ -124,16 +134,18 @@ class AbstractLanguage(object):
         return handler(self, name, value)
 
     def render_config(self, **kwargs):
+        self._prerender_config(kwargs)
         return self._template_config.render(**kwargs)
 
     def render_pod(self, **kwargs):
+        self._prerender_pod(kwargs)
         return self._template_pod.render(**kwargs)
 
 
-def get(name):
+def get(args):
     for subclass in AbstractLanguage.__subclasses__():
-        if subclass.name == name:
-            return subclass()
+        if subclass.name == args.code_language:
+            return subclass(args)
 
 
 def argextras():

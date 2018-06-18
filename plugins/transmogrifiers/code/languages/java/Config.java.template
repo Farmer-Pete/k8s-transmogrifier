@@ -1,4 +1,5 @@
 /* vim: set syn=java: */
+package {{package}};
 
 /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  * This is an auto-generated file.
@@ -27,20 +28,16 @@ public {% if is_abstract %}abstract {% endif %} class {{class_name}} {% if paren
     {% endif %}
 
     {% if not is_abstract %}
-    public {{class_name}}() throws IOException {
-        this(ConfigMap.init());
-    }
-
-    public {{class_name}}(ConfigMap configMap) throws IOException {
+    public {{class_name}}(TransmogrifierFileProxy fileProxy) throws IOException {
     {% if is_secret %}
-        this._map = configMap.getSecret("{{config_file}}");
+        this._map = fileProxy.getSecret("{{config_file}}");
 
         {% for var in variables %}
         this.{{var.var}} = this._map.get("{{var.name}}");
         {% endfor %}
 
     {% else %}
-        this._map = configMap.getConfig("{{config_file}}");
+        this._map = fileProxy.getConfig("{{config_file}}");
 
         {% for var in variables %}
         if (!this._map.containsKey("{{var.name}}")) {
@@ -62,7 +59,7 @@ public {% if is_abstract %}abstract {% endif %} class {{class_name}} {% if paren
         }
         {% endfor %}
 
-    {%-endif %}
+    {% endif %}
     }
     {% endif %}
 

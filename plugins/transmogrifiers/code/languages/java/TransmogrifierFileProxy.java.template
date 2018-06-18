@@ -1,0 +1,21 @@
+/* vim: set syn=java: */
+package {{package}};
+
+/*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ * This is an auto-generated file.
+ * Do not edit!
+ *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+
+import java.util.Map;
+
+public interface TransmogrifierFileProxy {
+
+    public Map<String, Object> getConfig(String configName);
+    public boolean verifyConfig(String configName);
+    public String getConfigPrefix();
+
+    public Map<String, String> getSecret(String secretName);
+    public boolean verifySecret(String configName);
+    public String getSecretPrefix();
+
+}

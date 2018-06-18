@@ -18,7 +18,7 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
         super(CodeTransmogrifier, self).__init__(args)
 
         self._configs = None
-        self._language = languages.get(args.code_language)
+        self._language = languages.get(args)
 
         if not self._language:
             lib.cmdline.usage('Either missing or invalid code language provided')
@@ -263,6 +263,8 @@ class CodeTransmogrifier(transmogrifiers.AbstractTransmogrifier):
 
         for path in paths:
             os.unlink(path)
+
+        self._language.prepare(configs, output)
 
         for metadata in self.hierarchize_config(configs.configmaps):
             self.generate_config_objs(output, **metadata)

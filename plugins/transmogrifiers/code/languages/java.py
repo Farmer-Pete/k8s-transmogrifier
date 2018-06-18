@@ -1,4 +1,8 @@
+import os
+import jinja2
+
 import plugins
+import lib.cmdline
 
 from .. import languages
 
@@ -6,6 +10,18 @@ from lib.decorators import classproperty
 
 
 class JavaLanaguage(languages.AbstractLanguage):
+
+    def __init__(self, args):
+        super(JavaLanaguage, self).__init__(args)
+        self._package = args.code_java_package
+
+        if not self._package:
+            lib.cmdline.usage('Package definition is required for Java')
+
+        with open(plugins.resource_file(__file__, 'TransmogrifierFileProxy.java.template')) as tpl:
+            self._template_fileproxy = jinja2.Template(
+                tpl.read()
+            )
 
     @classproperty
     def name(self):
@@ -70,4 +86,18 @@ class JavaLanaguage(languages.AbstractLanguage):
             list: 'new ArrayList<>()',
             dict: 'new HashMap<>()'
         }
+
+    def prepare(self, configs, target_dir):
+        target = os.path.join(target_dir, 'TransmogrifierFileProxy.java')
+
+        with open(target, 'w') as fptr:
+            fptr.write(
+                self._template_fileproxy.render(package=self._package)
+            )
+
+    def _prerender_config(self, kwargs):
+        kwargs['package'] = self._package
+
+    def _prerender_pod(self, kwargs):
+        self._prerender_config(kwargs)
 

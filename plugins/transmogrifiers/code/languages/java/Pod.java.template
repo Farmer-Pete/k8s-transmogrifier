@@ -1,4 +1,5 @@
 /* vim: set syntax=java: */
+package {{package}};
 
 /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  * This is an auto-generated file.
@@ -31,20 +32,18 @@ public class {{class_name}} {
     public {{obj}} {{obj}} = null;
     {% endfor %}
 
-    public {{class_name}}() throws IOException {
-        this(new ArrayList<String>());
+    public {{class_name}}(TransmogrifierFileProxy fileProxy) throws IOException {
+        this(fileProxy, new ArrayList<String>());
     }
 
-    public {{class_name}}(List<String> blackList) throws IOException {
-
-        ConfigMap configMap = ConfigMap.init();
+    public {{class_name}}(TransmogrifierFileProxy fileProxy, List<String> blackList) throws IOException {
 
         for (String key: {{class_name}}.CONFIGS) {
             if (blackList.contains(key)) {
                 continue;
             } // To avoid some files we know we don't want to verify
 
-            if (!configMap.verifyConfig(key) && key.startsWith(ConfigMap.KEY_CONFIG_PREFIX)) {
+            if (!fileProxy.verifyConfig(key) && key.startsWith(fileProxy.getConfigPrefix())) {
                 throw new IOException("Could not find config file: " + key);
             }
         }
@@ -54,13 +53,13 @@ public class {{class_name}} {
                 continue;
             } // To avoid some secrets we know we don't want to verify
 
-            if (!configMap.verifySecret(key) && key.startsWith(ConfigMap.KEY_SECRET_PREFIX)) {
+            if (!fileProxy.verifySecret(key) && key.startsWith(fileProxy.getSecretPrefix())) {
                 throw new IOException("Could not find secret file: " + key);
             }
         }
 
         {% for obj in objects -%}
-        this.{{obj}} = new {{obj}}(configMap);
+        this.{{obj}} = new {{obj}}(fileProxy);
         {% endfor %}
 
     }
