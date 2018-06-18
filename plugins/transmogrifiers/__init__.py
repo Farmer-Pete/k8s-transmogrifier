@@ -22,19 +22,19 @@ class AbstractTransmogrifier(object):
 
     @classproperty
     def description(cls):
-        raise NotImplementedError(lib.errmsg.not_implemented(cls))
+        return cls.name
 
     @classproperty
     def deserialize_flag(cls):
-        raise NotImplementedError(lib.errmsg.not_implemented(cls))
+        return False
 
     @classproperty
     def arggroup(cls):
-        raise NotImplementedError(lib.errmsg.not_implemented(cls))
+        return cls.name
 
     @classproperty
     def argmeta(cls):
-        raise NotImplementedError(lib.errmsg.not_implemented(cls))
+        return cls.name.upper()
 
     @classproperty
     def argextras(cls):
