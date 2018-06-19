@@ -1,4 +1,5 @@
 import plugins
+import unittest
 
 from . import AbstractLayout, DEFAULT_TEMPLATE_NAME
 
@@ -25,7 +26,7 @@ class WebLayout(AbstractLayout):
             return tpl.read()
 
     @classproperty
-    def name(self):
+    def name(cls):
         return 'web'
 
     @property
@@ -36,5 +37,23 @@ class WebLayout(AbstractLayout):
         return super(WebLayout, self).render(
             ext_2_highlight=EXT_2_CODE_HIGHLIGHT_CLASS,
             **kwargs
+        )
+
+
+class __WebLayout_Test(unittest.TestCase):
+
+    def test_render(self):
+
+        class __WebLayout(WebLayout):
+
+            @property
+            def template(self):
+                return '<body>{{content}}</body>'
+
+        layout = __WebLayout()
+
+        self.assertEqual(
+            layout.render(content='Hello World'),
+            '<body>Hello World</body>'
         )
 

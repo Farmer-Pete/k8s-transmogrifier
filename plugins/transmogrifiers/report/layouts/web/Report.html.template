@@ -120,6 +120,8 @@
                 <span class="{%if invalid_files.pods %}invalid mdl-badge{% endif %}" data-badge="{{invalid_files.pods | length}}">
                     <i class="material-icons mdl-list__item-icon">dashboard</i> Pods</a>
                 </span>
+            <a class="mdl-navigation__link" href="#section-variables">
+                <i class="material-icons mdl-list__item-icon">monetization_on</i> Variables </a>
             <a class="mdl-navigation__link" href="#summary">
                 <i class="material-icons mdl-list__item-icon">grid_on</i> Summary</a>
         </nav>
@@ -160,7 +162,7 @@
              <i class="material-icons mdl-list__item-icon">insert_drive_file</i> Config Maps
          </h4>
 
-        {% for filename, content, is_valid, ext, pods in configmaps_list %}
+        {% for filename, content, variables, is_valid, ext, pods in configmaps_list %}
         <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp {% if not is_valid %}invalid{% endif %}">
             <a id="file-{{filename}}"></a>
             <div class="mdl-card__supporting-text">
@@ -174,6 +176,18 @@
                     </header>
                     <pre><code class="{{ext_2_highlight[ext]}}">{{content|e}}</code></pre>
                     <div>
+                        {% for var in variables %}
+                        <span class="mdl-chip">
+                            <a href="#var-{{var|e}}">
+                                <span class="mdl-chip__contact"><i class="material-icons">monetization_on</i></span>
+                                <span class="mdl-chip__text">{{var|e}}</span>
+                            </a>
+                        </span>
+                        {% endfor %}
+
+                    </div>
+                    <div>
+
                         {% for pod in pods %}
                         <span class="mdl-chip">
                             <a href="#pod-{{pod|e}}">
@@ -192,7 +206,7 @@
             <i class="material-icons mdl-list__item-icon">lock</i> Secrets <small><a href="#top">[ TOP ]</a></small>
         </h4>
 
-        {% for filename, content, is_valid, ext, pods in secrets_list %}
+        {% for filename, content, variables, is_valid, ext, pods in secrets_list %}
         <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp {% if not is_valid %}invalid{% endif %}">
             <a id="file-{{filename}}"></a>
             <div class="mdl-card__supporting-text">
@@ -204,6 +218,18 @@
                     <header class="mdl-color--primary-dark mdl-color-text--primary-contrast"> <i class="material-icons mdl-list__item-icon">lock</i> {{filename|e}}</header>
                     <pre><code class="{{ext_2_highlight[ext]}}">{{content|e}}</code></pre>
                     <div>
+                        {% for var in variables %}
+                        <span class="mdl-chip">
+                            <a href="#var-{{var|e}}">
+                                <span class="mdl-chip__contact"><i class="material-icons">monetization_on</i></span>
+                                <span class="mdl-chip__text">{{var|e}}</span>
+                            </a>
+                        </span>
+                        {% endfor %}
+
+                    </div>
+                    <div>
+
                         {% for pod in pods %}
                         <span class="mdl-chip">
                             <span class="mdl-chip__text">
@@ -237,6 +263,29 @@
                                 {% elif type == "sec" %}<i class="material-icons mdl-list__item-icon">lock</i>{% endif %}
                                 <a href="#file-{{filename|e}}">{{filename|e}}</a>
                             </span>
+                        </li>
+                        {% endfor %}
+                   </ul>
+                </div>
+            </div>
+        </section>
+        {% endfor %}
+
+        <h4 id="section-variables" class="mdl-color--accent mdl-color-text--accent-contrast header">
+            <i class="material-icons mdl-list__item-icon">monetization_on</i> Variables <small><a href="#top">[ TOP ]</a></small>
+        </h4>
+
+        {% for variable, filenames in variables_list %}
+        <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card__supporting-text">
+                <div>
+                    <a id="var-{{variable|e}}"></a>
+                    <header class="mdl-color--primary-dark mdl-color-text--primary-contrast"> <i class="material-icons mdl-list__item-icon">monetization_on</i> {{variable|e}}</header>
+                    <ul class="mdl-list">
+                        {% for filename in filenames %}
+                        <li class="mdl-list__item">
+                            <i class="material-icons mdl-list__item-icon">insert_drive_file</i>
+                            <a href="#file-{{filename|e}}">{{filename|e}}</a>
                         </li>
                         {% endfor %}
                    </ul>

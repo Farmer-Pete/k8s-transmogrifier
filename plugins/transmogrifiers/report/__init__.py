@@ -1,7 +1,8 @@
 import copy
 import time
-import itertools
 import datetime
+import itertools
+import collections
 
 import lib.cmdline
 
@@ -78,10 +79,12 @@ class ReportTransmogrifier(AbstractTransmogrifier):
                     title=self._args.report_title,
                     configmaps_list=self._config_smash(
                         configs.configmaps, invalid_files['configmaps']),
-                    secrets_list=self._config_smash(configs.secrets, invalid_files['secrets']),
+                    secrets_list=self._config_smash(
+                        configs.secrets, invalid_files['secrets']),
                     pods_list=sorted(configs.pods.items()),
                     timestamp=now,
                     invalid_files=invalid_files,
+                    variables_list=sorted(configs.variables.items()),
                     pod_files_matrix=self._pods_2_files_matrix(
                         configs.pods,
                         list(configs.configmaps.keys()) + list(configs.secrets.keys())
@@ -92,7 +95,7 @@ class ReportTransmogrifier(AbstractTransmogrifier):
     def _config_smash(self, config, invalid_files_ptr):
         smashed = []
 
-        for filename, (content, ext, is_valid) in sorted(config.items()):
+        for filename, (content, ext, variables, is_valid) in sorted(config.items()):
 
             if not is_valid:
                 invalid_files_ptr.append(filename)
@@ -100,9 +103,10 @@ class ReportTransmogrifier(AbstractTransmogrifier):
             smashed.append([
                 filename,
                 content,
+                variables,
                 is_valid,
                 ext,
-                self._configs.rpods[filename]
+                self._configs.rpods.get(filename, [])
             ])
 
         return smashed
@@ -132,4 +136,7 @@ class ReportTransmogrifier(AbstractTransmogrifier):
                 matrix[podname][fileindex][-1] = True
 
         return sorted(matrix.items())
+
+
+from . import tests
 

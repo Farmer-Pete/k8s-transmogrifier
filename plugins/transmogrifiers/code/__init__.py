@@ -110,12 +110,12 @@ class CodeTransmogrifier(AbstractTransmogrifier):
             for name in common_names
         }
 
-    def hierarchize_config(self, config_dict):
+    def _hierarchize_config(self, config_dict):
         ''' Discovers possible base classses '''
 
         haystack = {
             tuple(self._split_file_name(file_name)): [file_name, config]
-            for file_name, (config, _, _), in config_dict.items()
+            for file_name, (config, _, _, _), in config_dict.items()
         }
 
         hierarchy = dict()
@@ -163,7 +163,7 @@ class CodeTransmogrifier(AbstractTransmogrifier):
                 'parent': parent
             }
 
-    def generate_config_objs(self, target_dir, file_name, file_type, file_parts, config,
+    def _generate_config_objs(self, target_dir, file_name, file_type, file_parts, config,
                              parent=None, is_abstract=False, is_secret=False):
         ''' Generates the Java config classes '''
 
@@ -214,7 +214,7 @@ class CodeTransmogrifier(AbstractTransmogrifier):
 
         self._prettify(target)
 
-    def generate_pod_objs(self, target_dir, pod_type, files):
+    def _generate_pod_objs(self, target_dir, pod_type, files):
         ''' Generates the Java pod classes '''
 
         configs = [filename for filename, filetype, _ in files if filetype == lib.k8s.K8SConfigs.CONFIGTYPE_CONFIGMAP]
@@ -266,12 +266,12 @@ class CodeTransmogrifier(AbstractTransmogrifier):
 
         self._language.prepare(configs, output)
 
-        for metadata in self.hierarchize_config(configs.configmaps):
-            self.generate_config_objs(output, **metadata)
+        for metadata in self._hierarchize_config(configs.configmaps):
+            self._generate_config_objs(output, **metadata)
 
-        for metadata in self.hierarchize_config(configs.secrets):
-            self.generate_config_objs(output, is_secret=True, **metadata)
+        for metadata in self._hierarchize_config(configs.secrets):
+            self._generate_config_objs(output, is_secret=True, **metadata)
 
         for pod_type, files in configs.pods.items():
-            self.generate_pod_objs(output, pod_type, files)
+            self._generate_pod_objs(output, pod_type, files)
 

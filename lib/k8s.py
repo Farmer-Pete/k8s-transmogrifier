@@ -1,3 +1,4 @@
+import re
 import os
 import csv
 import collections
@@ -12,9 +13,12 @@ class K8SConfigs(object):
     DIR_NAME_SECRETS = 'k8s_secrets'
     DIR_METADATA = 'metadata'
     FILE_METADATA_PODS = 'pod_config_map.csv'
+    FILE_METADATA_VARS = 'vars.csv'
 
     CONFIGTYPE_CONFIGMAP = 'cm'
     CONFIGTYPE_SECRET = 'sec'
+
+    REGEXP_VARIABLES = re.compile(r'\${(\w+)}')
 
     def __init__(self, directory, deserialize=True):
         '''
@@ -26,6 +30,7 @@ class K8SConfigs(object):
         self.secrets = dict()
         self.pods = collections.defaultdict(list)
         self.rpods = collections.defaultdict(list)  # Stores the reverse of self.pods
+        self.variables = collections.defaultdict(list)
 
         stomp_errors = not deserialize
 
@@ -51,6 +56,15 @@ class K8SConfigs(object):
             for key in member.keys():
                 member[key] = sorted(member[key])
 
+        # Create variables file
+        lines = []
+        for variable, filenames in self.variables.items():
+            for filename in filenames:
+                lines.append('%s,%s,\n' % (filename, variable))
+        with open(os.path.join(directory, self.DIR_METADATA, self.FILE_METADATA_VARS), 'w') as f:
+            for line in sorted(lines):
+                f.write(line)
+
     def _listdir(self, *parts):
         root = os.path.join(*parts)
         for filename in os.listdir(root):
@@ -74,10 +88,16 @@ class K8SConfigs(object):
             else:
                 raise
 
+        variables = self.REGEXP_VARIABLES.findall(content)
+
+        for variable in variables:
+            self.variables[variable].append(filename)
+
         yield (
             filename, (
                 result if deserialize else content,
                 ext,
+                variables,
                 is_valid
             )
         )
