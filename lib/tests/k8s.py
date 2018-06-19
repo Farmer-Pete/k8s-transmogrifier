@@ -189,7 +189,7 @@ class __K8SConfigs_Error_Test(__K8SConfigs_Test_Base):
         cls._write(cls._tempdir, cls.DIRECTORY_ERR_SOURCE)
 
     def test_k8s_no_deserialize_errors(self):
-        config = K8SConfigs(self._tempdir, False)
+        config = K8SConfigs(self._tempdir, deserialize=False)
 
         self.assertTrue(
             dict(config.configmaps),
