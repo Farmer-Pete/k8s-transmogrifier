@@ -58,6 +58,10 @@
             display: none;
         }
 
+        table {
+            margin: auto;
+        }
+
         table.summary tr td {
             cursor: crosshair;
             padding: 0px;
@@ -275,24 +279,39 @@
             <i class="material-icons mdl-list__item-icon">monetization_on</i> Variables <small><a href="#top">[ TOP ]</a></small>
         </h4>
 
-        {% for variable, filenames in variables_list %}
-        <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
-            <div class="mdl-card__supporting-text">
-                <div>
+        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+            <thead>
+                <tr>
+                  <th class="mdl-data-table__cell--non-numeric">
+                     <i class="material-icons mdl-list__item-icon">monetization_on</i>
+                      Variable
+                  </th>
+                  <th class="mdl-data-table__cell--non-numeric">
+                      <i class="material-icons mdl-list__item-icon">insert_drive_file</i>
+                      File
+                  </th>
+                  <th>
+                      <i class="material-icons mdl-list__item-icon">layers</i>
+                      Usage Count
+                  </th>
+            </thead>
+            <tbody>
+                {% for variable, filenames in variables_list %}
+                <td class="mdl-data-table__cell--non-numeric">
                     <a id="var-{{variable|e}}"></a>
-                    <header class="mdl-color--primary-dark mdl-color-text--primary-contrast"> <i class="material-icons mdl-list__item-icon">monetization_on</i> {{variable|e}}</header>
-                    <ul class="mdl-list">
-                        {% for filename in filenames %}
-                        <li class="mdl-list__item">
-                            <i class="material-icons mdl-list__item-icon">insert_drive_file</i>
-                            <a href="#file-{{filename|e}}">{{filename|e}}</a>
-                        </li>
-                        {% endfor %}
-                   </ul>
-                </div>
-            </div>
-        </section>
-        {% endfor %}
+                    {{variable|e}}
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    {% for filename in filenames %}
+                    {% if loop.index > 1 %} <br/> {% endif %}
+                    <a href="#file-{{filename|e}}">{{filename|e}}</a>
+                    {% endfor %}
+                </td>
+                <td> {{ filenames|length }}
+                <tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <h4 id="summary" class="mdl-color--accent mdl-color-text--accent-contrast header">
             <i class="material-icons mdl-list__item-icon">grid_on</i> Summary <small><a href="#top">[ TOP ]</a></small>
