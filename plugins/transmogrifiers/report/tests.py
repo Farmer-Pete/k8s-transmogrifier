@@ -30,12 +30,12 @@ class __Report_Test(unittest.TestCase):
     def test_transmogrify(self):
         config = _Mock(
             configmaps={
-                'file1.json': ('{"key1": "value1"}', '.json', True),
-                'file2.json': ('{"key2": "value2"}', '.json', True),
+                'file1.json': ('{"key1": "value1"}', '.json', ['var1'], True),
+                'file2.json': ('{"key2": "value2"}', '.json', ['var2'], True),
             },
             secrets={
-                'secret1.json': ('{"secret1": "password1"}', '.json', True),
-                'secret2.json': ('{"secret2": "password2"}', '.json', True),
+                'secret1.json': ('{"secret1": "password1"}', '.json', ['var3'], True),
+                'secret2.json': ('{"secret2": "password2"}', '.json', [], True),
             },
             pods={
                 'POD1': [
@@ -51,6 +51,11 @@ class __Report_Test(unittest.TestCase):
                 'secret1.json': ['POD1'],
                 'file2.json': ['POD2'],
                 'secret2.json': ['POD2']
+            },
+            variables={
+                'var1': ['file1.json'],
+                'var2': ['file2.json'],
+                'var3': ['file3.json']
             }
 
         )
@@ -65,12 +70,12 @@ class __Report_Test(unittest.TestCase):
 
         self.assertEqual(kwargs['title'], 'My Title')
         self.assertEqual(kwargs['configmaps_list'], [
-            ['file1.json', '{"key1": "value1"}', True, '.json', ['POD1']],
-            ['file2.json', '{"key2": "value2"}', True, '.json', ['POD2']]
+            ['file1.json', '{"key1": "value1"}', ['var1'], True, '.json', ['POD1']],
+            ['file2.json', '{"key2": "value2"}', ['var2'], True, '.json', ['POD2']]
         ])
         self.assertEqual(kwargs['secrets_list'], [
-            ['secret1.json', '{"secret1": "password1"}', True, '.json', ['POD1']],
-            ['secret2.json', '{"secret2": "password2"}', True, '.json', ['POD2']]
+            ['secret1.json', '{"secret1": "password1"}', ['var3'], True, '.json', ['POD1']],
+            ['secret2.json', '{"secret2": "password2"}', [], True, '.json', ['POD2']]
         ])
         self.assertEqual(
             kwargs['pods_list'], [(
@@ -102,12 +107,12 @@ class __Report_Test(unittest.TestCase):
     def test_transmogrify_invalid_files(self):
         config = _Mock(
             configmaps={
-                'file1.json': ('{"key1": "value1"}', '.json', False),
-                'file2.json': ('{"key2": "value2"}', '.json', False),
+                'file1.json': ('{"key1": "value1"}', '.json', [], False),
+                'file2.json': ('{"key2": "value2"}', '.json', [], False),
             },
             secrets={
-                'secret1.json': ('{"secret1": "password1"}', '.json', False),
-                'secret2.json': ('{"secret2": "password2"}', '.json', False),
+                'secret1.json': ('{"secret1": "password1"}', '.json', [], False),
+                'secret2.json': ('{"secret2": "password2"}', '.json', [], False),
             },
             pods={
                 'POD1': [
@@ -118,6 +123,7 @@ class __Report_Test(unittest.TestCase):
                     ['secret_bad2.json', 'sec', False]
                 ],
             },
+            variables={},
             rpods={
                 'file_bad1.json': ['POD1'],
                 'secret_bad1.json': ['POD1'],
@@ -137,12 +143,12 @@ class __Report_Test(unittest.TestCase):
 
         self.assertEqual(kwargs['title'], 'My Title')
         self.assertEqual(kwargs['configmaps_list'], [
-            ['file1.json', '{"key1": "value1"}', False, '.json', []],
-            ['file2.json', '{"key2": "value2"}', False, '.json', []]
+            ['file1.json', '{"key1": "value1"}', [], False, '.json', []],
+            ['file2.json', '{"key2": "value2"}', [], False, '.json', []]
         ])
         self.assertEqual(kwargs['secrets_list'], [
-            ['secret1.json', '{"secret1": "password1"}', False, '.json', []],
-            ['secret2.json', '{"secret2": "password2"}', False, '.json', []]
+            ['secret1.json', '{"secret1": "password1"}', [], False, '.json', []],
+            ['secret2.json', '{"secret2": "password2"}', [], False, '.json', []]
         ])
         self.assertEqual(
             kwargs['pods_list'], [(

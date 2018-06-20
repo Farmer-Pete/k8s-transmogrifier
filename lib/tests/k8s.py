@@ -29,11 +29,11 @@ class __K8SConfigs_Test(__K8SConfigs_Test_Base):
 
     DIRECTORY_SOURCE = {
         K8SConfigs.DIR_NAME_CONFIGMAPS: {
-            'config_map_1.json': '{"key_c1_1": "value_c1_1", "key_c1_2": "value_c1_2"}',
-            'config_map_2.json': '{"key_c2_1": "value_c2_1", "key_c2_2": "value_c2_2"}',
+            'config_map_1.json': '{"key_c1_1": "${VAR_CM_1}", "key_c1_2": "value_c1_2"}',
+            'config_map_2.json': '{"key_c2_1": "value_c2_1", "key_c2_2": "${VAR_CM_2}"}',
         }, K8SConfigs.DIR_NAME_SECRETS: {
-            'secret_1.json': '{"key_s1_1": "value_s1_1", "key_s1_2": "value_s1_2"}',
-            'secret_2.json': '{"key_s2_1": "value_21_1", "key_s2_2": "value_s2_2"}',
+            'secret_1.json': '{"key_s1_1": "${VAR_SEC_1}", "key_s1_2": "value_s1_2"}',
+            'secret_2.json': '{"key_s2_1": "value_21_1", "key_s2_2": "${VAR_SEC_2}"}',
         }, K8SConfigs.DIR_METADATA: {
             K8SConfigs.FILE_METADATA_PODS: (
                 'POD1, config_map_1.json, cm\n'
@@ -46,11 +46,11 @@ class __K8SConfigs_Test(__K8SConfigs_Test_Base):
 
     DIRECTORY_OUT_OBJ = {
         K8SConfigs.DIR_NAME_CONFIGMAPS: {
-            'config_map_1.json': ({"key_c1_1": "value_c1_1", "key_c1_2": "value_c1_2"}, '.json', True),
-            'config_map_2.json': ({"key_c2_1": "value_c2_1", "key_c2_2": "value_c2_2"}, '.json', True)
+            'config_map_1.json': ({"key_c1_1": "${VAR_CM_1}", "key_c1_2": "value_c1_2"}, '.json', ['VAR_CM_1'], True),
+            'config_map_2.json': ({"key_c2_1": "value_c2_1", "key_c2_2": "${VAR_CM_2}"}, '.json', ['VAR_CM_2'], True)
         }, K8SConfigs.DIR_NAME_SECRETS: {
-            'secret_1.json': ({"key_s1_1": "value_s1_1", "key_s1_2": "value_s1_2"}, '.json', True),
-            'secret_2.json': ({"key_s2_1": "value_21_1", "key_s2_2": "value_s2_2"}, '.json', True),
+            'secret_1.json': ({"key_s1_1": "${VAR_SEC_1}", "key_s1_2": "value_s1_2"}, '.json', ['VAR_SEC_1'], True),
+            'secret_2.json': ({"key_s2_1": "value_21_1", "key_s2_2": "${VAR_SEC_2}"}, '.json', ['VAR_SEC_2'], True),
         }, K8SConfigs.DIR_METADATA: {
             K8SConfigs.FILE_METADATA_PODS: {
                 'POD1': [
@@ -72,11 +72,11 @@ class __K8SConfigs_Test(__K8SConfigs_Test_Base):
 
     DIRECTORY_OUT_STR = {
         K8SConfigs.DIR_NAME_CONFIGMAPS: {
-            'config_map_1.json': ('{"key_c1_1": "value_c1_1", "key_c1_2": "value_c1_2"}', '.json', True),
-            'config_map_2.json': ('{"key_c2_1": "value_c2_1", "key_c2_2": "value_c2_2"}', '.json', True)
+            'config_map_1.json': ('{"key_c1_1": "${VAR_CM_1}", "key_c1_2": "value_c1_2"}', '.json', ['VAR_CM_1'], True),
+            'config_map_2.json': ('{"key_c2_1": "value_c2_1", "key_c2_2": "${VAR_CM_2}"}', '.json', ['VAR_CM_2'], True)
         }, K8SConfigs.DIR_NAME_SECRETS: {
-            'secret_1.json': ('{"key_s1_1": "value_s1_1", "key_s1_2": "value_s1_2"}', '.json', True),
-            'secret_2.json': ('{"key_s2_1": "value_21_1", "key_s2_2": "value_s2_2"}', '.json', True),
+            'secret_1.json': ('{"key_s1_1": "${VAR_SEC_1}", "key_s1_2": "value_s1_2"}', '.json', ['VAR_SEC_1'], True),
+            'secret_2.json': ('{"key_s2_1": "value_21_1", "key_s2_2": "${VAR_SEC_2}"}', '.json', ['VAR_SEC_2'], True),
         }, K8SConfigs.DIR_METADATA: DIRECTORY_OUT_OBJ[K8SConfigs.DIR_METADATA]
     }
 
@@ -108,6 +108,17 @@ class __K8SConfigs_Test(__K8SConfigs_Test_Base):
             dict(config.rpods),
             self.DIRECTORY_OUT_OBJ[K8SConfigs.DIR_METADATA]['reverse_pods']
         )
+
+        with open(os.path.join(self._tempdir, K8SConfigs.DIR_METADATA, K8SConfigs.FILE_METADATA_VARS)) as f:
+            self.assertEqual(
+                f.read().strip(),
+                (
+                    'config_map_1.json,VAR_CM_1,\n'
+                    'config_map_2.json,VAR_CM_2,\n'
+                    'secret_1.json,VAR_SEC_1,\n'
+                    'secret_2.json,VAR_SEC_2,'
+                )
+            )
 
     def test_k8s_no_deserialize(self):
         config = K8SConfigs(self._tempdir, False)
@@ -155,11 +166,11 @@ class __K8SConfigs_Error_Test(__K8SConfigs_Test_Base):
 
     DIRECTORY_OUT_ERR_STR = {
         K8SConfigs.DIR_NAME_CONFIGMAPS: {
-            'config_map_good.json': ('{"key_c1_1": "value_c1_1", "key_c1_2": "value_c1_2"}', '.json', True),
+            'config_map_good.json': ('{"key_c1_1": "value_c1_1", "key_c1_2": "value_c1_2"}', '.json', [], True),
             'config_map_error.json': ('this is a bad config', '.json', False)
         }, K8SConfigs.DIR_NAME_SECRETS: {
-            'secret_good.json': ('{"key_s1_1": "value_s1_1", "key_s1_2": "value_s1_2"}', '.json', True),
-            'secret_error.json': ('this is a bad secret', '.json', False),
+            'secret_good.json': ('{"key_s1_1": "value_s1_1", "key_s1_2": "value_s1_2"}', '.json', [], True),
+            'secret_error.json': ('this is a bad secret', '.json', [], False),
         }, K8SConfigs.DIR_METADATA: {
             K8SConfigs.FILE_METADATA_PODS: {
                 'POD1': [
