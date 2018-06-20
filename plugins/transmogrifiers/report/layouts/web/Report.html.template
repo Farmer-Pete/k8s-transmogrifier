@@ -320,7 +320,7 @@
             {% for podname, filelist in pod_files_matrix %}
             <tr>
                 <td class="podname"><a href="#pod-{{podname}}">{{podname}}</a></td>
-                {% for filename, exists in filelist %}
+                {% for filename, exists in filelist|sort %}
                 <td
                     class="{% if exists %}mdl-color--green{% else %}mdl-color--red-100{% endif %}"
                     id="{{podname}}-{{filename}}"
